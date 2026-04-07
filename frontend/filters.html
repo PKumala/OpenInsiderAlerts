@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Manager</title>
+</head>
+<body>
+
+<h2>Filters</h2>
+
+<div id="filters"></div>
+
+<h3>Add Filter</h3>
+
+<input id="name" placeholder="Name" />
+<input id="type" placeholder="Type (value, price_range...)" />
+<textarea id="params" placeholder='{"min": 1000}'></textarea>
+<button onclick="addFilter()">Add</button>
+
+<script>
+async function loadFilters() {
+    const res = await fetch("/filters/");
+    const data = await res.json();
+
+    const div = document.getElementById("filters");
+    div.innerHTML = "";
+
+    data.forEach(f => {
+        div.innerHTML += `
+            <div>
+                <b>${f.name}</b>
+                (${f.type})
+                Enabled: ${f.enabled}
+                <button onclick="deleteFilter(${f.id})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+async function addFilter() {
+    const name = document.getElementById("name").value;
+    const type = document.getElementById("type").value;
+    const params = JSON.parse(document.getElementById("params").value);
+
+    await fetch("/filters/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            name,
+            type,
+            params,
+            enabled: true,
+            position: 1
+        })
+    });
+
+    loadFilters();
+}
+
+async function deleteFilter(id) {
+    await fetch(`/filters/${id}`, {method: "DELETE"});
+    loadFilters();
+}
+
+loadFilters();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg[binary]
+apscheduler
+requests
+beautifulsoup4
+yfinance
+pandas
+pytz
